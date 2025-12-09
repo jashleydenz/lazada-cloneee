@@ -57,7 +57,7 @@ async function seedDB() {
       price: 79.99,
       originalPrice: 129.99,
       discount: 38,
-      image: 'https://via.placeholder.com/300x300?text=Wireless+Headphones',
+      image: '/images/whp.jpg',
       category: 'Electronics',
       stock: 50,
       reviews: []
@@ -68,7 +68,7 @@ async function seedDB() {
       price: 199.99,
       originalPrice: 299.99,
       discount: 33,
-      image: 'https://via.placeholder.com/300x300?text=Smart+Watch',
+      image: '/images/download.jfif',
       category: 'Electronics',
       stock: 30,
       reviews: []
@@ -79,7 +79,7 @@ async function seedDB() {
       price: 9.99,
       originalPrice: 19.99,
       discount: 50,
-      image: 'https://via.placeholder.com/300x300?text=USB-C+Cable',
+      image: '/images/download (1).jfif',
       category: 'Accessories',
       stock: 200,
       reviews: []
@@ -90,7 +90,7 @@ async function seedDB() {
       price: 14.99,
       originalPrice: 24.99,
       discount: 40,
-      image: 'https://via.placeholder.com/300x300?text=Phone+Case',
+      image: '/images/whp.jpg',
       category: 'Accessories',
       stock: 100,
       reviews: []
@@ -101,7 +101,7 @@ async function seedDB() {
       price: 49.99,
       originalPrice: 79.99,
       discount: 37,
-      image: 'https://via.placeholder.com/300x300?text=Portable+Speaker',
+      image: '/images/download.jfif',
       category: 'Electronics',
       stock: 25,
       reviews: []
@@ -112,7 +112,7 @@ async function seedDB() {
       price: 12.99,
       originalPrice: 19.99,
       discount: 35,
-      image: 'https://via.placeholder.com/300x300?text=Phone+Stand',
+      image: '/images/download (1).jfif',
       category: 'Accessories',
       stock: 75,
       reviews: []
@@ -123,7 +123,7 @@ async function seedDB() {
       price: 8.99,
       originalPrice: 14.99,
       discount: 40,
-      image: 'https://via.placeholder.com/300x300?text=Screen+Protector',
+      image: '/images/whp.jpg',
       category: 'Accessories',
       stock: 150,
       reviews: []
@@ -134,7 +134,7 @@ async function seedDB() {
       price: 24.99,
       originalPrice: 39.99,
       discount: 37,
-      image: 'https://via.placeholder.com/300x300?text=Wireless+Charger',
+      image: '/images/download.jfif',
       category: 'Electronics',
       stock: 40,
       reviews: []

@@ -42,7 +42,7 @@ export function Header() {
           <div className="flex gap-6">
             <a href="#" className="hover:text-blue-600">FEEDBACK</a>
             <a href="#" className="hover:text-blue-600">SAVE MORE ON APP</a>
-            <a href="/seller" target="_blank" rel="noopener noreferrer" className="hover:text-blue-600">SELL ON LAZADA</a>
+            <Link href="/seller-signup" className="hover:text-blue-600">SELL ON LAZADA</Link>
           </div>
           <div className="flex gap-6">
             <a href="#" className="hover:text-blue-600">CUSTOMER CARE</a>

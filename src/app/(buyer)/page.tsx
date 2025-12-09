@@ -13,22 +13,22 @@ export default function Home() {
 
   const bannerImages = [
     {
-      src: 'https://via.placeholder.com/1400x500?text=LazMall+QUAKER+-+SAVE+UP+TO+14%+OFF',
+      src: '/images/whp.jpg',
       title: 'SAVE UP TO 14% OFF',
       subtitle: 'Free Shipping + Shop Voucher'
     },
     {
-      src: 'https://via.placeholder.com/1400x500?text=New+Collection+Available+Now',
+      src: '/images/download.jfif',
       title: 'NEW COLLECTION',
       subtitle: 'Up to 50% Discount'
     },
     {
-      src: 'https://via.placeholder.com/1400x500?text=Flash+Sale+This+Weekend',
+      src: '/images/download (1).jfif',
       title: 'FLASH SALE',
       subtitle: 'Limited Time Only'
     },
     {
-      src: 'https://via.placeholder.com/1400x500?text=Free+Shipping+Orders+Over+500',
+      src: '/globe.svg',
       title: 'FREE SHIPPING',
       subtitle: 'On orders over 500'
     },
@@ -88,6 +88,7 @@ export default function Home() {
                     src={banner.src}
                     alt={banner.title}
                     fill
+                    sizes="(max-width: 1024px) 100vw, 50vw"
                     className="object-cover"
                     priority={index === 0}
                   />
