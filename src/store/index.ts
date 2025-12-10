@@ -27,25 +27,71 @@ export const useAuthStore = create<AuthStore>((set) => ({
   setToken: (token) => set({ token }),
 }));
 
-export const useCartStore = create<CartStore>((set) => ({
-  items: [],
-  total: 0,
-  addItem: (item) => set((state) => {
-    const existingItem = state.items.find(i => i._id === item._id);
-    if (existingItem) {
-      return {
-        items: state.items.map(i => 
-          i._id === item._id ? { ...i, quantity: i.quantity + (item.quantity || 1) } : i
-        ),
-      };
+// Helper function to calculate total
+const calculateTotal = (items: any[]) => {
+  return items.reduce((sum, item) => {
+    const price = Number(item.specialPrice || item.price || 0);
+    const quantity = item.quantity || 1;
+    return sum + (price * quantity);
+  }, 0);
+};
+
+// Helper function to get item ID
+const getItemId = (item: any) => item._id || item.id;
+
+// Load cart from localStorage
+const loadCartFromStorage = () => {
+  if (typeof window !== 'undefined') {
+    const stored = localStorage.getItem('cart');
+    if (stored) {
+      try {
+        const items = JSON.parse(stored);
+        return { items, total: calculateTotal(items) };
+      } catch (e) {
+        return { items: [], total: 0 };
+      }
     }
-    return { items: [...state.items, { ...item, quantity: item.quantity || 1 }] };
+  }
+  return { items: [], total: 0 };
+};
+
+// Save cart to localStorage
+const saveCartToStorage = (items: any[]) => {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem('cart', JSON.stringify(items));
+  }
+};
+
+export const useCartStore = create<CartStore>((set) => ({
+  ...loadCartFromStorage(),
+  addItem: (item) => set((state) => {
+    const itemId = getItemId(item);
+    const existingItem = state.items.find(i => getItemId(i) === itemId);
+    
+    let newItems;
+    if (existingItem) {
+      newItems = state.items.map(i => 
+        getItemId(i) === itemId ? { ...i, quantity: i.quantity + (item.quantity || 1) } : i
+      );
+    } else {
+      newItems = [...state.items, { ...item, quantity: item.quantity || 1 }];
+    }
+    
+    saveCartToStorage(newItems);
+    return { items: newItems, total: calculateTotal(newItems) };
   }),
-  removeItem: (id) => set((state) => ({
-    items: state.items.filter(i => i._id !== id),
-  })),
-  updateQuantity: (id, quantity) => set((state) => ({
-    items: state.items.map(i => i._id === id ? { ...i, quantity } : i),
-  })),
-  clearCart: () => set({ items: [], total: 0 }),
+  removeItem: (id) => set((state) => {
+    const newItems = state.items.filter(i => getItemId(i) !== id);
+    saveCartToStorage(newItems);
+    return { items: newItems, total: calculateTotal(newItems) };
+  }),
+  updateQuantity: (id, quantity) => set((state) => {
+    const newItems = state.items.map(i => getItemId(i) === id ? { ...i, quantity } : i);
+    saveCartToStorage(newItems);
+    return { items: newItems, total: calculateTotal(newItems) };
+  }),
+  clearCart: () => {
+    saveCartToStorage([]);
+    return { items: [], total: 0 };
+  },
 }));

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { 
   IoStorefrontOutline, 
   IoReceiptOutline, 
@@ -43,6 +44,7 @@ const menuItems: MenuItem[] = [
     label: 'Orders', 
     icon: IoReceiptOutline, 
     subItems: [
+      'Orders',
       'Logistics',
       'Return Orders',
       'Reviews'
@@ -54,11 +56,22 @@ const menuItems: MenuItem[] = [
   { id: 'learn', label: 'Learn and Grow', icon: IoSchoolOutline, subItems: [] },
   { id: 'engagement', label: 'Engagement Center', icon: IoChatbubblesOutline, subItems: [] },
   { id: 'store', label: 'Store', icon: IoBusinessOutline, subItems: [] },
-  { id: 'finance', label: 'Finance', icon: IoWalletOutline, subItems: [] },
+  { 
+    id: 'finance', 
+    label: 'Finance', 
+    icon: IoWalletOutline, 
+    subItems: [
+      'My Income',
+      'My Balance',
+      'Logistics Fee',
+      'Shared Wallet'
+    ] 
+  },
   { id: 'support', label: 'Support', icon: IoHelpCircleOutline, subItems: [] },
 ];
 
 export default function SellerDashboardNavbar() {
+  const pathname = usePathname();
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
   const [activeItem, setActiveItem] = useState<string>('');
   const [showSettings, setShowSettings] = useState(false);
@@ -70,6 +83,10 @@ export default function SellerDashboardNavbar() {
         ? prev.filter(id => id !== itemId)
         : [...prev, itemId]
     );
+  };
+
+  const isSubItemActive = (href: string) => {
+    return pathname === href;
   };
 
   return (
@@ -119,7 +136,15 @@ export default function SellerDashboardNavbar() {
         {/* Common Tools */}
         <div>
           <button 
-            onClick={() => setShowCommonTools(!showCommonTools)}
+            onClick={() => {
+              // Clear all main menu expanded items and settings
+              setExpandedItems([]);
+              setActiveItem('');
+              setShowSettings(false);
+              
+              // Toggle common tools
+              setShowCommonTools(!showCommonTools);
+            }}
             className="w-full flex items-center justify-between px-6 py-2.5 text-left transition-colors bg-blue-50 hover:bg-blue-100"
           >
             <div className="flex items-center gap-3">
@@ -150,19 +175,31 @@ export default function SellerDashboardNavbar() {
             <div className="bg-gray-50">
               <Link
                 href="/seller-dashboard/manage-products"
-                className="block px-6 py-2 pl-16 text-sm text-black hover:text-blue-600 hover:bg-gray-100"
+                className={`block px-6 py-2 pl-16 text-sm hover:bg-gray-100 ${
+                  isSubItemActive('/seller-dashboard/manage-products')
+                    ? 'text-blue-600 bg-blue-50 font-medium'
+                    : 'text-black hover:text-blue-600'
+                }`}
               >
                 Manage Products
               </Link>
               <Link
                 href="/seller-dashboard/orders"
-                className="block px-6 py-2 pl-16 text-sm text-black hover:text-blue-600 hover:bg-gray-100"
+                className={`block px-6 py-2 pl-16 text-sm hover:bg-gray-100 ${
+                  isSubItemActive('/seller-dashboard/orders')
+                    ? 'text-blue-600 bg-blue-50 font-medium'
+                    : 'text-black hover:text-blue-600'
+                }`}
               >
                 Orders
               </Link>
               <Link
                 href="/seller-dashboard/promotions"
-                className="block px-6 py-2 pl-16 text-sm text-black hover:text-blue-600 hover:bg-gray-100"
+                className={`block px-6 py-2 pl-16 text-sm hover:bg-gray-100 ${
+                  isSubItemActive('/seller-dashboard/promotions')
+                    ? 'text-blue-600 bg-blue-50 font-medium'
+                    : 'text-black hover:text-blue-600'
+                }`}
               >
                 Promotions
               </Link>
@@ -174,18 +211,27 @@ export default function SellerDashboardNavbar() {
           <div key={item.id}>
             <button
               onClick={() => {
-                if (activeItem === item.id) {
-                  setActiveItem('');
-                } else {
-                  setActiveItem(item.id);
-                  setShowSettings(false);
-                }
+                // Close settings when clicking any main menu item
+                setShowSettings(false);
+                
+                // Toggle the expanded state for items with sub-items
                 if (item.subItems && item.subItems.length > 0) {
                   toggleExpand(item.id);
+                  
+                  // Set active item only if expanding, clear if collapsing
+                  if (expandedItems.includes(item.id)) {
+                    setActiveItem('');
+                  } else {
+                    setActiveItem(item.id);
+                  }
+                } else {
+                  // For items without sub-items, just set as active
+                  setActiveItem(item.id);
+                  setExpandedItems([]); // Clear all expanded items
                 }
               }}
               className={`w-full flex items-center justify-between px-6 py-2.5 text-left transition-colors ${
-                activeItem === item.id
+                expandedItems.includes(item.id)
                   ? 'bg-blue-50 text-blue-600 border-r-4 border-blue-600'
                   : 'text-black hover:bg-gray-50'
               }`}
@@ -195,7 +241,7 @@ export default function SellerDashboardNavbar() {
                 <span className="text-sm font-medium">{item.label}</span>
               </div>
               <svg 
-                className={`w-4 h-4 transition-transform ${activeItem === item.id ? 'rotate-180' : ''}`} 
+                className={`w-4 h-4 transition-transform ${expandedItems.includes(item.id) ? 'rotate-180' : ''}`} 
                 fill="none" 
                 stroke="currentColor" 
                 viewBox="0 0 24 24"
@@ -216,15 +262,32 @@ export default function SellerDashboardNavbar() {
                     href = '/seller-dashboard/add-product';
                   } else if (subItem === 'Decorate Products') {
                     href = '/seller-dashboard/decorate-products';
+                  } else if (subItem === 'Orders' && item.id === 'orders') {
+                    // Orders sub-item in Orders section goes to /seller-dashboard/orders
+                    href = '/seller-dashboard/orders';
+                  } else if (subItem === 'My Income') {
+                    href = '/seller-dashboard/finance/my-income';
+                  } else if (subItem === 'My Balance') {
+                    href = '/seller-dashboard/finance/my-balance';
+                  } else if (subItem === 'Logistics Fee') {
+                    href = '/seller-dashboard/finance/logistics-fee';
+                  } else if (subItem === 'Shared Wallet') {
+                    href = '/seller-dashboard/finance/shared-wallet';
                   } else {
                     href = `/seller-dashboard/${item.id}/${subItem.toLowerCase().replace(/\s+/g, '-')}`;
                   }
+                  
+                  const isActive = isSubItemActive(href);
                   
                   return (
                     <Link
                       key={index}
                       href={href}
-                      className="block px-6 py-2 pl-16 text-sm text-black hover:text-blue-600 hover:bg-gray-100"
+                      className={`block px-6 py-2 pl-16 text-sm hover:bg-gray-100 ${
+                        isActive 
+                          ? 'text-blue-600 bg-blue-50 font-medium' 
+                          : 'text-black hover:text-blue-600'
+                      }`}
                     >
                       {subItem}
                     </Link>
@@ -239,15 +302,15 @@ export default function SellerDashboardNavbar() {
         <div>
           <button
             onClick={() => {
-              if (activeItem === 'account') {
-                setActiveItem('');
-              } else {
-                setActiveItem('account');
-              }
+              // Clear all main menu expanded items
+              setExpandedItems([]);
+              setActiveItem('');
+              
+              // Toggle settings
               setShowSettings(!showSettings);
             }}
             className={`w-full flex items-center justify-between px-6 py-2.5 text-left transition-colors ${
-              activeItem === 'account'
+              showSettings
                 ? 'bg-blue-50 text-blue-600 border-r-4 border-blue-600'
                 : 'text-black hover:bg-gray-50'
             }`}
@@ -257,7 +320,7 @@ export default function SellerDashboardNavbar() {
               <span className="text-sm font-medium">My Account</span>
             </div>
             <svg 
-              className={`w-4 h-4 transition-transform ${activeItem === 'account' ? 'rotate-180' : ''}`} 
+              className={`w-4 h-4 transition-transform ${showSettings ? 'rotate-180' : ''}`} 
               fill="none" 
               stroke="currentColor" 
               viewBox="0 0 24 24"
@@ -270,14 +333,22 @@ export default function SellerDashboardNavbar() {
             <>
               <Link
                 href="/seller-dashboard/settings"
-                className="block px-6 py-2 pl-16 text-sm text-black hover:text-blue-600 hover:bg-gray-100"
+                className={`block px-6 py-2 pl-16 text-sm hover:bg-gray-100 ${
+                  isSubItemActive('/seller-dashboard/settings')
+                    ? 'text-blue-600 bg-blue-50 font-medium'
+                    : 'text-black hover:text-blue-600'
+                }`}
               >
                 Settings
               </Link>
               
               <Link
                 href="/seller-login"
-                className="block px-6 py-2 pl-16 text-sm text-black hover:text-blue-600 hover:bg-gray-100"
+                className={`block px-6 py-2 pl-16 text-sm hover:bg-gray-100 ${
+                  isSubItemActive('/seller-login')
+                    ? 'text-blue-600 bg-blue-50 font-medium'
+                    : 'text-black hover:text-blue-600'
+                }`}
               >
                 Logout
               </Link>

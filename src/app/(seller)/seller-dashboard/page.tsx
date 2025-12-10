@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { IoMailOutline, IoLocationOutline, IoCardOutline, IoStorefrontOutline } from 'react-icons/io5';
 
 export default function SellerDashboardPage() {
@@ -146,11 +147,11 @@ export default function SellerDashboardPage() {
 
         <div className="flex-1"></div>
 
-        <button className="w-12 h-12 flex items-center justify-center hover:bg-gray-100 transition rounded-lg">
+        <Link href="/seller-login" className="w-12 h-12 flex items-center justify-center hover:bg-gray-100 transition rounded-lg">
           <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
           </svg>
-        </button>
+        </Link>
 
         <button className="w-12 h-12 flex items-center justify-center hover:bg-gray-100 transition rounded-lg">
           <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">

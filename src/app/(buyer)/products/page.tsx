@@ -17,10 +17,52 @@ export default function ProductsPage() {
     const fetchProducts = async () => {
       setLoading(true);
       try {
+        // First, try to load from localStorage
+        const localProducts = JSON.parse(localStorage.getItem('products') || '[]');
+        
+        // Filter only active products for buyers
+        let activeProducts = localProducts.filter((p: any) => p.status === 'active');
+        
+        // Apply filters
+        if (search) {
+          activeProducts = activeProducts.filter((p: any) => 
+            p.name.toLowerCase().includes(search.toLowerCase()) ||
+            p.category.toLowerCase().includes(search.toLowerCase())
+          );
+        }
+        
+        if (category) {
+          activeProducts = activeProducts.filter((p: any) => 
+            p.category.toLowerCase().includes(category.toLowerCase())
+          );
+        }
+        
+        // Apply sorting
+        if (sort === 'price-asc') {
+          activeProducts.sort((a: any, b: any) => Number(a.price) - Number(b.price));
+        } else if (sort === 'price-desc') {
+          activeProducts.sort((a: any, b: any) => Number(b.price) - Number(a.price));
+        } else if (sort === 'newest') {
+          activeProducts.sort((a: any, b: any) => 
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          );
+        }
+        
+        if (activeProducts.length > 0) {
+          setProducts(activeProducts);
+          setLoading(false);
+          return;
+        }
+        
+        // If no local products, try API
         const response = await productAPI.getAll({ search, category, sort });
         setProducts(response.data.products);
       } catch (error) {
         console.error('Failed to fetch products:', error);
+        // If API fails, still show local products
+        const localProducts = JSON.parse(localStorage.getItem('products') || '[]');
+        const activeProducts = localProducts.filter((p: any) => p.status === 'active');
+        setProducts(activeProducts);
       } finally {
         setLoading(false);
       }
@@ -89,7 +131,7 @@ export default function ProductsPage() {
         ) : products.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {products.map((product) => (
-              <ProductCard key={product._id} product={product} />
+              <ProductCard key={product._id || product.id} product={product} />
             ))}
           </div>
         ) : (

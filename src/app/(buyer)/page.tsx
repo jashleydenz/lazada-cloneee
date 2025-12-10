@@ -46,18 +46,52 @@ export default function Home() {
     const fetchProducts = async () => {
       try {
         setLoading(true);
+        
+        // First, try to load from localStorage
+        const localProducts = JSON.parse(localStorage.getItem('products') || '[]');
+        
+        // Filter only active products for buyers
+        const activeProducts = localProducts.filter((p: any) => p.status === 'active');
+        
+        if (activeProducts.length > 0) {
+          setProducts(activeProducts);
+          setError('');
+          setLoading(false);
+          return;
+        }
+        
+        // If no local products, try API
         const response = await productAPI.getAll();
         setProducts(response.data.products || response.data);
         setError('');
       } catch (err: any) {
-        setError(err.response?.data?.error || 'Failed to load products');
-        setProducts([]);
+        // If API fails, still show local products
+        const localProducts = JSON.parse(localStorage.getItem('products') || '[]');
+        const activeProducts = localProducts.filter((p: any) => p.status === 'active');
+        
+        if (activeProducts.length > 0) {
+          setProducts(activeProducts);
+          setError('');
+        } else {
+          setError(err.response?.data?.error || 'Failed to load products');
+          setProducts([]);
+        }
       } finally {
         setLoading(false);
       }
     };
 
     fetchProducts();
+    
+    // Listen for storage changes
+    const handleStorageChange = () => {
+      const localProducts = JSON.parse(localStorage.getItem('products') || '[]');
+      const activeProducts = localProducts.filter((p: any) => p.status === 'active');
+      setProducts(activeProducts);
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
   return (
@@ -177,7 +211,7 @@ export default function Home() {
           {!loading && products.length > 0 && (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
               {products.slice(0, 10).map((product) => (
-                <ProductCard key={product._id} product={product} />
+                <ProductCard key={product._id || product.id} product={product} />
               ))}
             </div>
           )}
@@ -221,7 +255,7 @@ export default function Home() {
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
                 {products.slice(10, 20).map((product) => (
-                  <ProductCard key={product._id} product={product} />
+                  <ProductCard key={product._id || product.id} product={product} />
                 ))}
               </div>
 

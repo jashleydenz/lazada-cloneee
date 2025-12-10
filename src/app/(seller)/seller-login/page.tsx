@@ -57,7 +57,7 @@ export default function SellerLoginPasswordPage() {
         </div>
 
         {/* Main Content */}
-        <div className="relative z-10 w-full max-w-5xl flex items-center justify-between gap-12">
+        <div className="relative z-10 w-full max-w-5xl mx-auto flex items-center justify-center gap-12">
         {/* Left Side - Promotional Banner */}
         <div className="flex-1 text-white hidden lg:block">
           <div className="bg-gradient-to-br from-purple-700 to-pink-600 rounded-3xl p-8 text-center shadow-2xl border-4 border-white">

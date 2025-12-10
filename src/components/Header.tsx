@@ -2,13 +2,17 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useAuthStore } from '@/store';
+import { useAuthStore, useCartStore } from '@/store';
 
 export function Header() {
   const user = useAuthStore((state: any) => state.user);
   const isLoggedIn = useAuthStore((state: any) => state.isLoggedIn);
   const logout = useAuthStore((state: any) => state.logout);
+  const cartItems = useCartStore((state: any) => state.items);
   const [isScrolled, setIsScrolled] = useState(false);
+  
+  // Calculate total cart items
+  const cartCount = cartItems.reduce((total: number, item: any) => total + (item.quantity || 1), 0);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -94,8 +98,13 @@ export function Header() {
 
           {/* Right Icons */}
           <div className="flex gap-6 ml-6 items-center flex-shrink-0">
-            <Link href="/cart" className="text-gray-600 hover:text-gray-900 text-2xl">
+            <Link href="/cart" className="text-gray-600 hover:text-gray-900 text-2xl relative">
               🛒
+              {cartCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
+                  {cartCount > 99 ? '99+' : cartCount}
+                </span>
+              )}
             </Link>
             <button className="bg-pink-500 text-white px-3 py-1 rounded text-xs font-bold hover:bg-pink-600 transition">
               APPLY NOW
